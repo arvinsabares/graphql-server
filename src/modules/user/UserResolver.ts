@@ -1,5 +1,6 @@
 import { User } from "@models/User";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { RegisterUserInput } from "@modules/user/args/RegisterUserInput";
 
 const users = [
     {
@@ -22,7 +23,7 @@ export class UserResolver {
     }
 
     @Mutation(() => String)
-    async registerUser(@Arg("registerData") registerData: string) {
-        return `User ${registerData} is registered with email: ${registerData} and password: ${registerData}`
+    async registerUser(@Arg("registerData") { username, email, password }: RegisterUserInput) {
+        return `User ${username} is registered with email: ${email} and password: ${password}`
     }
 }
