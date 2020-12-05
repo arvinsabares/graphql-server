@@ -10,20 +10,26 @@
     ],
     "sourceMap": true,
     "outDir": "./build",
-    "rootDir": "src",
+    "rootDir": ".",
     "removeComments": true,
-    "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": "./",
+    "baseUrl": "./src",
+    "paths": {
+      "@modules/*": [
+        "modules/*"
+      ],
+      "@models/*": [
+        "models/*"
+      ]
+    },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
