@@ -4,7 +4,9 @@
   "description": "graphql-server",
   "main": "src/index.ts",
   "scripts": {
-    "start": "tsnd --respawn src/index.ts"
+    "run:dev": "tsnd --respawn src/index.ts",
+    "build": "tsc",
+    "run:build": "node build/src/index.js"
   },
   "repository": {
     "type": "git",
@@ -33,7 +35,7 @@
     "typescript": "^4.1.2"
   },
   "_moduleAliases": {
-    "@modules": "src/modules",
-    "@models": "src/models"
+    "@modules": "build/src/modules",
+    "@models": "build/src/models"
   }
 }

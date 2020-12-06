@@ -21,13 +21,13 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
       "@modules/*": [
-        "modules/*"
+        "src/modules/*"
       ],
       "@models/*": [
-        "models/*"
+        "src/models/*"
       ]
     },
     "allowSyntheticDefaultImports": true,
