@@ -1,9 +1,10 @@
+import "dotenv/config";
 import "reflect-metadata";
-import "module-alias/register";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "@modules/user/UserResolver";
+import * as config from "config";
 
 const startServer = async () => {
   const app = express();
@@ -15,8 +16,8 @@ const startServer = async () => {
 
   server.applyMiddleware({ app });
 
-  app.listen({ port: 4000 }, () =>
-    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+  app.listen({ port: config.PORT }, () =>
+    console.log(`🚀 Server ready at http://localhost:${config.PORT}${server.graphqlPath}`)
   );
 };
 
