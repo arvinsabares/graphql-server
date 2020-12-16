@@ -1,29 +1,34 @@
 import { User } from "@models/User";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { RegisterUserInput } from "@modules/user/args/RegisterUserInput";
+import { signUpInput } from "@modules/user/args/signUpInput";
+import { GraphQLClient } from 'graphql-request';
+import * as config from "config";
+import { GET_ALL_USERS, SIGN_UP_USER } from "graphqlAPI";
 
-const users = [
-    {
-        id: "example-id-1",
-        username: "user1",
-        email: "user1@email.com"
+const graphQLClient = new GraphQLClient(config.ENDPOINT, {
+    headers: {
+        "x-hasura-admin-secret": config.ADMIN_SECRET
     },
-    {
-        id: "example-id-2",
-        username: "user2",
-        email: "user2@email.com"
-    }
-]
+})
 
 @Resolver()
 export class UserResolver {
     @Query(() => [User])
     async users() {
-        return users;
+        const response = await graphQLClient.request(GET_ALL_USERS);
+        console.log("Query", "users", response.user);
+        return response.user;
     }
 
-    @Mutation(() => String)
-    async registerUser(@Arg("registerData") { username, email, password }: RegisterUserInput) {
-        return `User ${username} is registered with email: ${email} and password: ${password}`
+    @Mutation(() => User)
+    async signUpUser(@Arg("signUpInput") { username, email, password }: signUpInput) {
+        const variables = {
+            username,
+            email,
+            password,
+        };
+            const response = await graphQLClient.request(SIGN_UP_USER, variables);
+            console.log("Mutation", "users", response.insert_user_one);
+            return response.insert_user_one;   
     }
 }
