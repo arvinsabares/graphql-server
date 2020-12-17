@@ -19,3 +19,13 @@ export const SIGN_UP_USER = gql`
     }
   }
 `;
+
+export const GET_USER = gql`
+  query GetUserByEmail($email: String!) {
+      user(where: { email: { _eq: $email } }) {
+        id
+        username
+        password
+      }
+    }
+  `;

@@ -1,9 +1,10 @@
 import { Field, InputType } from "type-graphql";
-import { IsEmail, MinLength } from "class-validator";
+import { IsAlphanumeric, IsEmail, MinLength } from "class-validator";
 
 @InputType()
-export class signUpInput {
+export class SignUpInput {
     @Field()
+    @IsAlphanumeric()
     @MinLength(2)
     username: string;
 
@@ -12,6 +13,7 @@ export class signUpInput {
     email: string;
 
     @Field()
+    @IsAlphanumeric()
     @MinLength(4)
     password: string;
 }
