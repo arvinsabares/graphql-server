@@ -1,13 +1,13 @@
+import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { GraphQLClient } from "graphql-request";
+import bcrypt from "bcryptjs";
 import { User } from "@models/User";
 import { LoginResponse } from "@models/LoginResponse";
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { SignUpInput } from "@modules/user/args/SignUpInput";
 import { LogInInput } from "@modules/user/args/LogInInput";
-import { GraphQLClient } from 'graphql-request';
-import * as config from "config";
-import { createAccessToken } from "utils";
-import { GET_ALL_USERS, SIGN_UP_USER, GET_USER } from "graphqlAPI";
-import bcrypt from "bcryptjs";
+import * as config from "@app/config"; 
+import { createAccessToken } from "@app/utils";
+import { GET_ALL_USERS, SIGN_UP_USER, GET_USER } from "@app/graphqlAPI";
 
 const graphQLClient = new GraphQLClient(config.ENDPOINT, {
     headers: {
@@ -17,6 +17,7 @@ const graphQLClient = new GraphQLClient(config.ENDPOINT, {
 
 @Resolver()
 export class UserResolver {
+    // TODO: API for dev purposes only
     @Query(() => [User])
     async users() {
         const response = await graphQLClient.request(GET_ALL_USERS);
@@ -25,7 +26,7 @@ export class UserResolver {
     }
 
     @Mutation(() => LoginResponse)
-    async signUpUser(@Arg("signUpInput") { username, email, password }: SignUpInput
+    async signUp(@Arg("signUpInput") { username, email, password }: SignUpInput
     ): Promise<LoginResponse> {
         const salt = await bcrypt.genSalt(config.SALT_ROUNDS);
         const hashedPwd = await bcrypt.hash(password, salt);

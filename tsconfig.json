@@ -23,6 +23,9 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "./src",
     "paths": {
+      "@app/*": [
+        "./*"
+      ],
       "@modules/*": [
         "modules/*"
       ],
