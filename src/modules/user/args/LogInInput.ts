@@ -1,5 +1,5 @@
 import { Field, InputType } from "type-graphql";
-import { IsAlphanumeric, IsEmail } from "class-validator";
+import { IsEmail } from "class-validator";
 
 @InputType()
 export class LogInInput {
@@ -8,6 +8,5 @@ export class LogInInput {
     email: string;
 
     @Field()
-    @IsAlphanumeric()
     password: string;
 }
