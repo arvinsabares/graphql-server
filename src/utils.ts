@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { Response } from "express";
 import * as config from "@app/config";
 
 export const createAccessToken = (userId: string) => {
@@ -14,6 +15,14 @@ export const createAccessToken = (userId: string) => {
     { expiresIn: '15m' });
 };
 
+export const createRefreshToken = (userId: string) => {
+    return jwt.sign({
+        "userId": userId
+    },
+    config.REFRESH_TOKEN_SECRET,
+    { expiresIn: '3d' });
+};
+
 export const generateHashedPwd = async (password: string) => {
     try{
         const salt = await bcrypt.genSalt(config.SALT_ROUNDS);
@@ -23,4 +32,12 @@ export const generateHashedPwd = async (password: string) => {
         console.error("[generateHashedPwd]", err);
         throw err;
     }
+};
+
+export const setRefreshTokenCookie = (res: Response, token: string) => {
+    res.cookie(
+        "jid",
+        token,
+        { httpOnly: true }
+    );
 };

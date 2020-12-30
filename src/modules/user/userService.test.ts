@@ -87,7 +87,6 @@ describe("User Service", () => {
             } catch(err){
                 expect(err).toEqual(expectedError);
             }
-
         });
 
         it("should throw an error if more than 1 user is found", async () => {
@@ -107,7 +106,6 @@ describe("User Service", () => {
             } catch(err){
                 expect(err).toEqual(expectedError);
             }
-
         });
     });
 });

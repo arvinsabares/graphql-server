@@ -1,32 +1,47 @@
 import "reflect-metadata";
 import bcrypt from "bcryptjs";
+import { Request, Response } from "express";
 import * as utils from "@app/utils";
 import { UserResolver } from "./UserResolver";
 import * as userService from "@modules/user/userService";
 
 describe("User resolvers", () => {
-    let createAccessTokenStub: any;
-    let generateHashedPwdStub: any;
     let signUpUserStub: any;
     let logInUserStub: any;
+    let generateHashedPwdStub: any;
     let passwordCompareStub: any;
+    let setRefreshTokenCookieStub: any;
+    const cookieMock = jest.fn();
+    let contextMock: any;
 
     const mockedValues = {
         userId: "user-id-mock",
         username: "username-mock",
         email: "email@mock.com",
         accessToken: "access-token-mock",
+        refreshToken: "refresh-token-mock",
         salt: "salt-mock",
         hashedPwd: "hashed-pwd-mock",
     };
 
     beforeEach(() => {
+        contextMock = {
+            res: {
+                cookie: cookieMock
+            } as unknown as Response,
+            req: {} as Request
+        };
+
         signUpUserStub = jest.spyOn(userService, "signUpUser");
         logInUserStub = jest.spyOn(userService, "logInUser");
         passwordCompareStub = jest.spyOn(bcrypt, "compare");
         generateHashedPwdStub = jest.spyOn(utils, "generateHashedPwd");
-        createAccessTokenStub = jest.spyOn(utils, "createAccessToken")
+        setRefreshTokenCookieStub = jest.spyOn(utils, "setRefreshTokenCookie");
+
+        jest.spyOn(utils, "createAccessToken")
             .mockReturnValue(mockedValues.accessToken);
+        jest.spyOn(utils, "createRefreshToken")
+            .mockReturnValue(mockedValues.refreshToken);
     });
 
     afterEach(() => {
@@ -44,8 +59,12 @@ describe("User resolvers", () => {
                 username: mockedValues.username,
                 email: mockedValues.email,
                 password: nonHashedPwd
-            });
+            }, contextMock);
 
+            expect(setRefreshTokenCookieStub).toHaveBeenCalledWith(
+                contextMock.res,
+                mockedValues.refreshToken
+            );
             expect(response.accessToken).toEqual(mockedValues.accessToken);
         });
 
@@ -60,7 +79,7 @@ describe("User resolvers", () => {
                     username: mockedValues.username,
                     email: mockedValues.email,
                     password: nonHashedPwd
-                });
+                }, contextMock);
                 throw new Error("userResolver.signUp did not throw an error");
             }catch(err){
                 expect(err).toEqual(errorMock);
@@ -78,7 +97,7 @@ describe("User resolvers", () => {
                     username: mockedValues.username,
                     email: mockedValues.email,
                     password: nonHashedPwd
-                });
+                }, contextMock);
                 throw new Error("userResolver.signUp did not throw an error");
             }catch(err){
                 expect(err).toEqual(errorMock);
@@ -101,10 +120,12 @@ describe("User resolvers", () => {
             const response = await userResolver.logIn({
                 email: mockedValues.email,
                 password: passwordMock
-            });
+            }, contextMock);
 
-            expect(createAccessTokenStub).toHaveBeenCalledTimes(1);
-            expect(createAccessTokenStub).toHaveBeenCalledWith(mockedValues.userId);
+            expect(setRefreshTokenCookieStub).toHaveBeenCalledWith(
+                contextMock.res,
+                mockedValues.refreshToken
+            );
             expect(response.accessToken).toEqual(mockedValues.accessToken);
         });
 
@@ -117,7 +138,7 @@ describe("User resolvers", () => {
                 await userResolver.logIn({
                     email: mockedValues.email,
                     password: passwordMock
-                });
+                }, contextMock);
                 throw new Error("userResolver.logIn did not throw an error");
             }catch(err){
                 expect(err).toEqual(errorMock);
@@ -139,7 +160,7 @@ describe("User resolvers", () => {
                 await userResolver.logIn({
                     email: mockedValues.email,
                     password: "pwd-mock"
-                });
+                }, contextMock);
                 throw new Error("userResolver.logIn did not throw an error");
             }catch(err){
                 expect(err).toEqual(new Error("Incorrect password"));
@@ -161,7 +182,7 @@ describe("User resolvers", () => {
                 await userResolver.logIn({
                     email: mockedValues.email,
                     password: "pwd-mock"
-                });
+                }, contextMock);
                 throw new Error("userResolver.logIn did not throw an error");
             }catch(err){
                 expect(err).toEqual(errorMock);
