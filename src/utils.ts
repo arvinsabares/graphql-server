@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { Response } from "express";
 import * as config from "@app/config";
+import * as constants from "@helpers/constants";
 
 export const createAccessToken = (userId: string) => {
     return jwt.sign({
@@ -25,7 +26,7 @@ export const createRefreshToken = (userId: string) => {
 
 export const generateHashedPwd = async (password: string) => {
     try{
-        const salt = await bcrypt.genSalt(config.SALT_ROUNDS);
+        const salt = await bcrypt.genSalt(constants.SALT_ROUNDS);
         const hashedPwd = await bcrypt.hash(password, salt);
         return hashedPwd;
     }catch(err){
@@ -36,7 +37,7 @@ export const generateHashedPwd = async (password: string) => {
 
 export const setRefreshTokenCookie = (res: Response, token: string) => {
     res.cookie(
-        "jid",
+        constants.REFRESH_TOKEN_COOKIE,
         token,
         { httpOnly: true }
     );

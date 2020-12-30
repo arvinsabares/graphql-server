@@ -1,6 +1,6 @@
 import { GraphQLClient } from "graphql-request";
 import * as config from "@app/config";
-import { GET_ALL_USERS, GET_USER, SIGN_UP_USER } from "@app/graphqlAPI";
+import { GET_ALL_USERS, GET_USER, SIGN_UP_USER, GET_USER_BY_ID } from "@app/graphqlAPI";
 import { SignUpInput } from "./args/SignUpInput";
 
 const graphQLClient = new GraphQLClient(config.ENDPOINT, {
@@ -16,6 +16,21 @@ export const findAllUsers = async () => {
         console.log("[userService: findAllUsers]", response);
         return response.user;
     }catch (err){
+        throw err;
+    }
+};
+
+export const findUserById = async (id: string) => {
+    try {
+        const response = await graphQLClient.request(GET_USER_BY_ID, { id });
+        const user = response.user_by_id;
+        if (user === null){
+            throw new Error("User not found");
+        }
+        console.log("[userService: findUserById]", user);
+        return user;
+    } catch (err) {
+        console.error("[userService: findUserById]", err);
         throw err;
     }
 };
@@ -38,11 +53,11 @@ export const logInUser = async (email: string) => {
         console.log("[userService: logInUser]", response.user);
 
         if (!response.user.length) {
-            throw new Error("User not found.");
+            throw new Error("User not found");
         }
 
         if (response.user.length > 1) {
-            throw new Error("More than 1 user found.");
+            throw new Error("More than 1 user found");
         }
 
         return response.user[0];

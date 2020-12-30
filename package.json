@@ -7,7 +7,7 @@
     "dev": "tsnd -r tsconfig-paths/register --respawn src/index.ts",
     "build": "tsc -p tsconfig.prod.json",
     "prod": "yarn build && node -r ./prod-paths.js ./build/src/index.js",
-    "test": "jest --runInBand",
+    "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
   "repository": {
@@ -26,6 +26,7 @@
     "apollo-server-testing": "^2.19.0",
     "bcryptjs": "^2.4.3",
     "class-validator": "^0.12.2",
+    "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "graphql": "^15.4.0",
     "graphql-request": "^3.3.0",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
+    "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.9",
     "@types/graphql": "^14.5.0",
     "@types/jest": "^26.0.19",
