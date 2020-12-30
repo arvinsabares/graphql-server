@@ -34,7 +34,7 @@ describe("User resolvers", () => {
     });
 
     describe("Sign up", () => {
-        it("should return an access token on successful signing up", async () => {
+        it("should return an access token on successful sign up", async () => {
             const userResolver = new UserResolver();
             const nonHashedPwd = "non-hashed-pwd-mock";
             generateHashedPwdStub.mockImplementation(() => Promise.resolve(mockedValues.hashedPwd));

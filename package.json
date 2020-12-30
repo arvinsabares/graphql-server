@@ -5,9 +5,9 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "tsnd -r tsconfig-paths/register --respawn src/index.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.prod.json",
     "prod": "yarn build && node -r ./prod-paths.js ./build/src/index.js",
-    "test": "jest --silent",
+    "test": "jest --runInBand",
     "test:watch": "jest --watch"
   },
   "repository": {
