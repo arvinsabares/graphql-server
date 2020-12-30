@@ -16,6 +16,48 @@ describe("User Service", () => {
         requestStub = jest.spyOn(GraphQLClient.prototype, "request");
     });
 
+    describe("findUserById", () => {
+        it("should return the user object on successful query", async () => {
+            const expectedUser = {
+                id: mockedValues.userId
+            };
+            requestStub.mockImplementation(() => Promise.resolve({
+                "user_by_id": expectedUser
+            }));
+            const user = await userService.findUserById(mockedValues.userId);
+
+            expect(user).toEqual(expectedUser);
+        });
+
+        it("should throw an error on failed query", async () => {
+            const errorMock = "find-user-by-id-failed"
+            requestStub.mockImplementation(() => Promise.reject(errorMock));
+
+            try {
+                await userService.findUserById(mockedValues.userId);
+                throw new Error("userService.findUserById did not throw an error");
+            } catch (err) {
+                expect(err).toEqual(errorMock);
+            }
+
+        });
+
+        it("should throw an error if user is not found", async () => {
+            const expectedError = new Error("User not found");
+            requestStub.mockImplementation(() => Promise.resolve({
+                "user_by_id": null
+            }));
+
+            try {
+                await userService.findUserById(mockedValues.userId);
+                throw new Error("userService.findUserById did not throw an error");
+            } catch (err) {
+                expect(err).toEqual(expectedError);
+            }
+
+        });
+    });
+
     describe("signUpUser", () => {
         it("should return the user id on successful sign up", async () => {
             requestStub.mockImplementation(() => Promise.resolve({
@@ -76,7 +118,7 @@ describe("User Service", () => {
         });
 
         it("should throw an error if user is not found", async () => {
-            const expectedError = new Error("User not found.");
+            const expectedError = new Error("User not found");
             requestStub.mockImplementation(() => Promise.resolve({
                 "user": []
             }));
@@ -87,11 +129,10 @@ describe("User Service", () => {
             } catch(err){
                 expect(err).toEqual(expectedError);
             }
-
         });
 
         it("should throw an error if more than 1 user is found", async () => {
-            const expectedError = new Error("More than 1 user found.");
+            const expectedError = new Error("More than 1 user found");
             requestStub.mockImplementation(() => Promise.resolve({
                 "user": [{
                     id: "id-1"
@@ -107,7 +148,6 @@ describe("User Service", () => {
             } catch(err){
                 expect(err).toEqual(expectedError);
             }
-
         });
     });
 });

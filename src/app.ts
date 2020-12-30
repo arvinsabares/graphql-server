@@ -7,7 +7,10 @@ export const createServer = async () => {
         resolvers: [UserResolver]
     });
 
-    const server = new ApolloServer({ schema });
+    const server = new ApolloServer({ 
+        schema,
+        context: ({req, res}) => ({ req, res })
+    });
 
     return server;
 };

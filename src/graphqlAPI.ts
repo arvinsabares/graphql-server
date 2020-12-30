@@ -10,6 +10,16 @@ export const GET_ALL_USERS = gql`
     }
   `;
 
+export const GET_USER_BY_ID = gql`
+  query($id: uuid!) {
+      user_by_id(id: $id) {
+        id
+        username
+        email
+      }
+    }
+  `;
+
 export const SIGN_UP_USER = gql`
   mutation SignUpUser($username: String!, $email: String!, $password: String!) {
     insert_user_one(object: {username: $username, email: $email, password: $password }){
