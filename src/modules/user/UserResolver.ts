@@ -15,7 +15,7 @@ import { AppContext } from "@app/models/AppContext";
 
 @Resolver()
 export class UserResolver {
-    // TODO: API for dev purposes only. Remove in prod.
+    // TODO: API for dev purposes only. Remove in prod. Some change
     @Query(() => [User])
     async users() {
         const users = await findAllUsers();
