@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "tsnd -r tsconfig-paths/register --respawn src/index.ts",
-    "build": "tsc -p tsconfig.prod.json",
+    "build": "tsc",
     "prod": "yarn build && node -r ./prod-paths.js ./build/src/index.js",
     "test": "jest --coverage",
     "test:watch": "jest --watch"

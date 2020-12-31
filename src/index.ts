@@ -11,7 +11,7 @@ const startServer = async () => {
   app.use(express.json());
   app.use(cookieParser());
 
-  app.post("/refresh_token", refreshToken);
+  app.post(config.REFRESH_ENDPOINT, refreshToken);
 
   const server = await createServer();
 

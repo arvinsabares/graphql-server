@@ -39,6 +39,9 @@ export const setRefreshTokenCookie = (res: Response, token: string) => {
     res.cookie(
         constants.REFRESH_TOKEN_COOKIE,
         token,
-        { httpOnly: true }
+        {
+            httpOnly: true,
+            path: config.REFRESH_ENDPOINT
+        }
     );
 };
