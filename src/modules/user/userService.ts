@@ -9,7 +9,8 @@ const graphQLClient = new GraphQLClient(config.ENDPOINT, {
     },
 });
 
-
+// TODO: function is for dev purposes only. Remove in prod.
+/* istanbul ignore next */
 export const findAllUsers = async () => {
     try {
         const response = await graphQLClient.request(GET_ALL_USERS);

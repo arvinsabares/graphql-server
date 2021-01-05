@@ -10,14 +10,14 @@ import {
     createRefreshToken,
     generateHashedPwd,
     setRefreshTokenCookie
-} from "@app/utils";
+} from "@helpers/authHelpers";
 import { AppContext } from "@app/models/AppContext";
 
 @Resolver()
 export class UserResolver {
     // TODO: API for dev purposes only. Remove in prod.
     @Query(() => [User])
-    async users() {
+    async users /* istanbul ignore next */ () {
         const users = await findAllUsers();
         return users;
     }

@@ -1,9 +1,11 @@
 import "reflect-metadata";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import * as utils from "@app/utils";
+import { buildSchema } from "type-graphql";
+import * as authHelpers from "../../helpers/authHelpers";
 import { UserResolver } from "./UserResolver";
-import * as userService from "@modules/user/userService";
+import * as userService from "./userService";
+import { mockedValues } from "../../helpers/testConstants";
 
 describe("User resolvers", () => {
     let signUpUserStub: any;
@@ -12,35 +14,30 @@ describe("User resolvers", () => {
     let passwordCompareStub: any;
     let setRefreshTokenCookieStub: any;
     const cookieMock = jest.fn();
-    let contextMock: any;
+    const contextMock = {
+        res: {
+            cookie: cookieMock
+        } as unknown as Response,
+        req: {} as Request
+    };;
 
-    const mockedValues = {
-        userId: "user-id-mock",
-        username: "username-mock",
-        email: "email@mock.com",
-        accessToken: "access-token-mock",
-        refreshToken: "refresh-token-mock",
-        salt: "salt-mock",
-        hashedPwd: "hashed-pwd-mock",
-    };
+    // Adds coverage for type-graphql decorators with return types
+    beforeAll(async () => {
+        await buildSchema({
+            resolvers: [UserResolver]
+        })
+    });
 
     beforeEach(() => {
-        contextMock = {
-            res: {
-                cookie: cookieMock
-            } as unknown as Response,
-            req: {} as Request
-        };
-
         signUpUserStub = jest.spyOn(userService, "signUpUser");
         logInUserStub = jest.spyOn(userService, "logInUser");
         passwordCompareStub = jest.spyOn(bcrypt, "compare");
-        generateHashedPwdStub = jest.spyOn(utils, "generateHashedPwd");
-        setRefreshTokenCookieStub = jest.spyOn(utils, "setRefreshTokenCookie");
+        generateHashedPwdStub = jest.spyOn(authHelpers, "generateHashedPwd");
+        setRefreshTokenCookieStub = jest.spyOn(authHelpers, "setRefreshTokenCookie");
 
-        jest.spyOn(utils, "createAccessToken")
+        jest.spyOn(authHelpers, "createAccessToken")
             .mockReturnValue(mockedValues.accessToken);
-        jest.spyOn(utils, "createRefreshToken")
+        jest.spyOn(authHelpers, "createRefreshToken")
             .mockReturnValue(mockedValues.refreshToken);
     });
 
@@ -107,86 +104,90 @@ describe("User resolvers", () => {
 
     describe("Log in", () => {
         const passwordMock = "pwd-mock";
-        it("should return an access token when logging in", async () => {
-            const userResolver = new UserResolver();
-            logInUserStub.mockImplementation(() => {
-                return Promise.resolve({
-                    id: mockedValues.userId,
-                    password: passwordMock
-                })
-            });
-            passwordCompareStub.mockImplementation(() => Promise.resolve(true));
+        describe("when email and pasword are valid", () => {
+            it("should return an access token", async () => {
+                const userResolver = new UserResolver();
+                logInUserStub.mockImplementation(() => {
+                    return Promise.resolve({
+                        id: mockedValues.userId,
+                        password: passwordMock
+                    })
+                });
+                passwordCompareStub.mockImplementation(() => Promise.resolve(true));
 
-            const response = await userResolver.logIn({
-                email: mockedValues.email,
-                password: passwordMock
-            }, contextMock);
-
-            expect(setRefreshTokenCookieStub).toHaveBeenCalledWith(
-                contextMock.res,
-                mockedValues.refreshToken
-            );
-            expect(response.accessToken).toEqual(mockedValues.accessToken);
-        });
-
-        it("should throw an error on failed login", async () => {
-            const userResolver = new UserResolver();
-            const errorMock = new Error("login-error");
-            logInUserStub.mockImplementation(() => Promise.reject(errorMock));
-            
-            try{
-                await userResolver.logIn({
+                const response = await userResolver.logIn({
                     email: mockedValues.email,
                     password: passwordMock
                 }, contextMock);
-                throw new Error("userResolver.logIn did not throw an error");
-            }catch(err){
-                expect(err).toEqual(errorMock);
-            }
+
+                expect(setRefreshTokenCookieStub).toHaveBeenCalledWith(
+                    contextMock.res,
+                    mockedValues.refreshToken
+                );
+                expect(response.accessToken).toEqual(mockedValues.accessToken);
+            });
         });
 
-        it("should throw an error if password is invalid", async () => {
-            const userResolver = new UserResolver();
+        describe("when email or password is invalid", () => {
+            it("should throw an error if email is invalid", async () => {
+                const userResolver = new UserResolver();
+                const errorMock = new Error("login-error");
+                logInUserStub.mockImplementation(() => Promise.reject(errorMock));
 
-            logInUserStub.mockImplementation(() => {
-                return Promise.resolve({
-                    id: mockedValues.userId,
-                    password: passwordMock
-                })
+                try {
+                    await userResolver.logIn({
+                        email: mockedValues.email,
+                        password: passwordMock
+                    }, contextMock);
+                    throw new Error("userResolver.logIn did not throw an error");
+                } catch (err) {
+                    expect(err).toEqual(errorMock);
+                }
             });
-            passwordCompareStub.mockImplementation(() => Promise.resolve(false));
-            
-            try{
-                await userResolver.logIn({
-                    email: mockedValues.email,
-                    password: "pwd-mock"
-                }, contextMock);
-                throw new Error("userResolver.logIn did not throw an error");
-            }catch(err){
-                expect(err).toEqual(new Error("Incorrect password"));
-            }
-        });
 
-        it("should throw an error if comparing password failed", async () => {
-            const userResolver = new UserResolver();
-            const errorMock = new Error("pwd-error");
-            logInUserStub.mockImplementation(() => {
-                return Promise.resolve({
-                    id: mockedValues.userId,
-                    password: passwordMock
-                })
+            it("should throw an error if password is invalid", async () => {
+                const userResolver = new UserResolver();
+
+                logInUserStub.mockImplementation(() => {
+                    return Promise.resolve({
+                        id: mockedValues.userId,
+                        password: passwordMock
+                    })
+                });
+                passwordCompareStub.mockImplementation(() => Promise.resolve(false));
+
+                try {
+                    await userResolver.logIn({
+                        email: mockedValues.email,
+                        password: "pwd-mock"
+                    }, contextMock);
+                    throw new Error("userResolver.logIn did not throw an error");
+                } catch (err) {
+                    expect(err).toEqual(new Error("Incorrect password"));
+                }
             });
-            passwordCompareStub.mockImplementation(() => Promise.reject(errorMock));
-            
-            try{
-                await userResolver.logIn({
-                    email: mockedValues.email,
-                    password: "pwd-mock"
-                }, contextMock);
-                throw new Error("userResolver.logIn did not throw an error");
-            }catch(err){
-                expect(err).toEqual(errorMock);
-            }
+
+            it("should throw an error if comparing password failed", async () => {
+                const userResolver = new UserResolver();
+                const errorMock = new Error("pwd-error");
+                logInUserStub.mockImplementation(() => {
+                    return Promise.resolve({
+                        id: mockedValues.userId,
+                        password: passwordMock
+                    })
+                });
+                passwordCompareStub.mockImplementation(() => Promise.reject(errorMock));
+
+                try {
+                    await userResolver.logIn({
+                        email: mockedValues.email,
+                        password: "pwd-mock"
+                    }, contextMock);
+                    throw new Error("userResolver.logIn did not throw an error");
+                } catch (err) {
+                    expect(err).toEqual(errorMock);
+                }
+            });
         });
     });
 });

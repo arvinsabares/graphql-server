@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { REFRESH_TOKEN_COOKIE } from "@helpers/constants";
 import { REFRESH_TOKEN_SECRET } from "@app/config";
 import { findUserById } from "@app/modules/user/userService";
-import { createAccessToken } from "@app/utils";
+import { createAccessToken } from "@helpers/authHelpers";
 
 export const refreshToken = async (req: Request, res: Response) => {
     const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
