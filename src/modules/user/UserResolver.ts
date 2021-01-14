@@ -29,7 +29,7 @@ export class UserResolver {
     ): Promise<LoginResponse> {
         const hashedPwd = await generateHashedPwd(password);
         const userId = await saveUser({ username, email, password: hashedPwd });
-        console.log("[Mutation: saveUser]", userId);
+        console.log("[Mutation: signUp]", userId);
 
         setRefreshTokenCookie(
             res,
