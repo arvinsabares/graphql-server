@@ -4,7 +4,7 @@ import { User } from "@models/User";
 import { LoginResponse } from "@models/LoginResponse";
 import { SignUpInput } from "@modules/user/args/SignUpInput";
 import { LogInInput } from "@modules/user/args/LogInInput";
-import { findAllUsers, logInUser, signUpUser } from "@modules/user/userService";
+import { findAllUsers, findUserByEmail, saveUser } from "@modules/user/userService";
 import { 
     createAccessToken,
     createRefreshToken,
@@ -28,8 +28,8 @@ export class UserResolver {
         @Ctx() { res }: AppContext
     ): Promise<LoginResponse> {
         const hashedPwd = await generateHashedPwd(password);
-        const userId = await signUpUser({ username, email, password: hashedPwd });
-        console.log("[Mutation: signUpUser]", userId);
+        const userId = await saveUser({ username, email, password: hashedPwd });
+        console.log("[Mutation: signUp]", userId);
 
         setRefreshTokenCookie(
             res,
@@ -46,7 +46,7 @@ export class UserResolver {
         @Arg("logInInput") { email, password }: LogInInput,
         @Ctx() { res }: AppContext
     ): Promise<LoginResponse>{
-        const retrievedUser = await logInUser(email);
+        const retrievedUser = await findUserByEmail(email);
         console.log("[Mutation: logIn]", retrievedUser);
 
         const isPasswordValid = await bcrypt.compare(password, retrievedUser.password);

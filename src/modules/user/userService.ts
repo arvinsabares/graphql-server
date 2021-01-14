@@ -36,22 +36,22 @@ export const findUserById = async (id: string) => {
     }
 };
 
-export const signUpUser = async (signUpInput: SignUpInput) => {
+export const saveUser = async (signUpInput: SignUpInput) => {
     try{
         const response = await graphQLClient.request(SIGN_UP_USER, signUpInput);
         const newUser = response.insert_user_one;
-        console.log("[userService: signUpUser]", newUser);
+        console.log("[userService: saveUser]", newUser);
         return newUser.id;
     }catch(err){
-        console.error("[userService: signUpUser]", err);
+        console.error("[userService: saveUser]", err);
         throw err;
     }
 };
 
-export const logInUser = async (email: string) => {
+export const findUserByEmail = async (email: string) => {
     try{
         const response = await graphQLClient.request(GET_USER, { email });
-        console.log("[userService: logInUser]", response.user);
+        console.log("[userService: findUserByEmail]", response.user);
 
         if (!response.user.length) {
             throw new Error("User not found");
@@ -63,7 +63,7 @@ export const logInUser = async (email: string) => {
 
         return response.user[0];
     }catch(err){
-        console.error("[userService: logInUser]", err);
+        console.error("[userService: findUserByEmail]", err);
         throw err;
     }
 };
