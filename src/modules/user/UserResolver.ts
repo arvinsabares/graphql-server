@@ -64,4 +64,18 @@ export class UserResolver {
             accessToken: createAccessToken(retrievedUser.id)
         }
     }
+
+    @Mutation(() => LoginResponse)
+    async logOut(
+        @Ctx() { res }: AppContext
+    ): Promise<LoginResponse> {
+        setRefreshTokenCookie(
+            res,
+            ""
+        );
+
+        return {
+            accessToken: ""
+        }
+    }
 }

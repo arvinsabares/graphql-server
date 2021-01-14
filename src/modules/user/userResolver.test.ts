@@ -190,4 +190,17 @@ describe("User resolvers", () => {
             });
         });
     });
+
+    describe("Log out", () => {
+        it("should return an empty access token and refresh cookie", async () => {
+            const userResolver = new UserResolver();
+            const response = await userResolver.logOut(contextMock);
+
+            expect(setRefreshTokenCookieStub).toHaveBeenCalledWith(
+                contextMock.res,
+                ""
+            );
+            expect(response.accessToken).toEqual("");
+        });
+    });
 });
