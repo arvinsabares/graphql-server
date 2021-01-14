@@ -12,24 +12,24 @@ export const createAccessToken = (userId: string) => {
             "x-hasura-user-id": userId,
         }
     },
-    config.ACCESS_TOKEN_SECRET,
-    { expiresIn: '15m' });
+        config.ACCESS_TOKEN_SECRET,
+        { expiresIn: '15m' });
 };
 
 export const createRefreshToken = (userId: string) => {
     return jwt.sign({
         "userId": userId
     },
-    config.REFRESH_TOKEN_SECRET,
-    { expiresIn: '3d' });
+        config.REFRESH_TOKEN_SECRET,
+        { expiresIn: '3d' });
 };
 
 export const generateHashedPwd = async (password: string) => {
-    try{
+    try {
         const salt = await bcrypt.genSalt(constants.SALT_ROUNDS);
         const hashedPwd = await bcrypt.hash(password, salt);
         return hashedPwd;
-    }catch(err){
+    } catch (err) {
         console.error("[generateHashedPwd]", err);
         throw err;
     }

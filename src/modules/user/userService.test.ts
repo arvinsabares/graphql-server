@@ -1,16 +1,9 @@
 import { GraphQLClient } from "graphql-request";
+import { mockedValues } from "../../helpers/testConstants";
 import * as userService from "./userService";
 
 describe("User Service", () => {
     let requestStub: any;
-    const mockedValues = {
-        userId: "user-id-mock",
-        username: "username-mock",
-        email: "email@mock.com",
-        accessToken: "access-token-mock",
-        salt: "salt-mock",
-        hashedPwd: "hashed-pwd-mock",
-    };
 
     beforeEach(() => {
         requestStub = jest.spyOn(GraphQLClient.prototype, "request");

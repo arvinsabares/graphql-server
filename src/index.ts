@@ -2,7 +2,7 @@ import "dotenv/config";
 import "reflect-metadata";
 import express from "express";
 import cookieParser from "cookie-parser";
-import { createServer } from "@app/app";
+import { createServer } from "@app/server";
 import * as config from "@app/config";
 import { refreshToken } from "@routes/refreshToken";
 
