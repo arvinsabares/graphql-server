@@ -51,14 +51,14 @@ describe("User Service", () => {
         });
     });
 
-    describe("signUpUser", () => {
+    describe("saveUser", () => {
         it("should return the user id on successful sign up", async () => {
             requestStub.mockImplementation(() => Promise.resolve({
                 "insert_user_one": {
                     id: mockedValues.userId
                 }
             }));
-            const userId = await userService.signUpUser({
+            const userId = await userService.saveUser({
                 username: mockedValues.username,
                 email: mockedValues.email,
                 password: mockedValues.hashedPwd
@@ -72,12 +72,12 @@ describe("User Service", () => {
             requestStub.mockImplementation(() => Promise.reject(errorMock));
 
             try{
-                await userService.signUpUser({
+                await userService.saveUser({
                     username: mockedValues.username,
                     email: mockedValues.email,
                     password: mockedValues.hashedPwd
                 });
-                throw new Error("userService.signUpUser did not throw an error");
+                throw new Error("userService.saveUser did not throw an error");
             }catch (err){
                 expect(err).toEqual(errorMock);
             }
@@ -85,14 +85,14 @@ describe("User Service", () => {
         });
     });
 
-    describe("logInUser", () => {
+    describe("findUserByEmail", () => {
         it("should return the user on successful log in", async () => {
             requestStub.mockImplementation(() => Promise.resolve({
                 "user": [{
                     id: mockedValues.userId
                 }]
             }));
-            const user = await userService.logInUser(mockedValues.email);
+            const user = await userService.findUserByEmail(mockedValues.email);
 
             expect(user.id).toEqual(mockedValues.userId);
         });
@@ -102,8 +102,8 @@ describe("User Service", () => {
             requestStub.mockImplementation(() => Promise.reject(errorMock));
 
             try{
-                await userService.logInUser(mockedValues.email);
-                throw new Error("userService.logInUser did not throw an error");
+                await userService.findUserByEmail(mockedValues.email);
+                throw new Error("userService.findUserByEmail did not throw an error");
             } catch(err){
                 expect(err).toEqual(errorMock);
             }
@@ -117,8 +117,8 @@ describe("User Service", () => {
             }));
 
             try{
-                await userService.logInUser(mockedValues.email);
-                throw new Error("userService.logInUser did not throw an error");
+                await userService.findUserByEmail(mockedValues.email);
+                throw new Error("userService.findUserByEmail did not throw an error");
             } catch(err){
                 expect(err).toEqual(expectedError);
             }
@@ -136,8 +136,8 @@ describe("User Service", () => {
             }));
 
             try{
-                await userService.logInUser(mockedValues.email);
-                throw new Error("userService.logInUser did not throw an error");
+                await userService.findUserByEmail(mockedValues.email);
+                throw new Error("userService.findUserByEmail did not throw an error");
             } catch(err){
                 expect(err).toEqual(expectedError);
             }

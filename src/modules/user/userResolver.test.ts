@@ -8,8 +8,8 @@ import * as userService from "./userService";
 import { mockedValues } from "../../helpers/testConstants";
 
 describe("User resolvers", () => {
-    let signUpUserStub: any;
-    let logInUserStub: any;
+    let saveUserStub: any;
+    let findUserByEmailStub: any;
     let generateHashedPwdStub: any;
     let passwordCompareStub: any;
     let setRefreshTokenCookieStub: any;
@@ -29,8 +29,8 @@ describe("User resolvers", () => {
     });
 
     beforeEach(() => {
-        signUpUserStub = jest.spyOn(userService, "signUpUser");
-        logInUserStub = jest.spyOn(userService, "logInUser");
+        saveUserStub = jest.spyOn(userService, "saveUser");
+        findUserByEmailStub = jest.spyOn(userService, "findUserByEmail");
         passwordCompareStub = jest.spyOn(bcrypt, "compare");
         generateHashedPwdStub = jest.spyOn(authHelpers, "generateHashedPwd");
         setRefreshTokenCookieStub = jest.spyOn(authHelpers, "setRefreshTokenCookie");
@@ -50,7 +50,7 @@ describe("User resolvers", () => {
             const userResolver = new UserResolver();
             const nonHashedPwd = "non-hashed-pwd-mock";
             generateHashedPwdStub.mockImplementation(() => Promise.resolve(mockedValues.hashedPwd));
-            signUpUserStub.mockImplementation(() => Promise.resolve(mockedValues.userId));
+            saveUserStub.mockImplementation(() => Promise.resolve(mockedValues.userId));
 
             const response = await userResolver.signUp({
                 username: mockedValues.username,
@@ -87,7 +87,7 @@ describe("User resolvers", () => {
             const userResolver = new UserResolver();
             const nonHashedPwd = "non-hashed-pwd-mock";
             const errorMock = new Error("signup-error");
-            signUpUserStub.mockImplementation(() => Promise.reject(errorMock));
+            saveUserStub.mockImplementation(() => Promise.reject(errorMock));
 
             try{
                 await userResolver.signUp({
@@ -107,7 +107,7 @@ describe("User resolvers", () => {
         describe("when email and pasword are valid", () => {
             it("should return an access token", async () => {
                 const userResolver = new UserResolver();
-                logInUserStub.mockImplementation(() => {
+                findUserByEmailStub.mockImplementation(() => {
                     return Promise.resolve({
                         id: mockedValues.userId,
                         password: passwordMock
@@ -132,7 +132,7 @@ describe("User resolvers", () => {
             it("should throw an error if email is invalid", async () => {
                 const userResolver = new UserResolver();
                 const errorMock = new Error("login-error");
-                logInUserStub.mockImplementation(() => Promise.reject(errorMock));
+                findUserByEmailStub.mockImplementation(() => Promise.reject(errorMock));
 
                 try {
                     await userResolver.logIn({
@@ -148,7 +148,7 @@ describe("User resolvers", () => {
             it("should throw an error if password is invalid", async () => {
                 const userResolver = new UserResolver();
 
-                logInUserStub.mockImplementation(() => {
+                findUserByEmailStub.mockImplementation(() => {
                     return Promise.resolve({
                         id: mockedValues.userId,
                         password: passwordMock
@@ -170,7 +170,7 @@ describe("User resolvers", () => {
             it("should throw an error if comparing password failed", async () => {
                 const userResolver = new UserResolver();
                 const errorMock = new Error("pwd-error");
-                logInUserStub.mockImplementation(() => {
+                findUserByEmailStub.mockImplementation(() => {
                     return Promise.resolve({
                         id: mockedValues.userId,
                         password: passwordMock
