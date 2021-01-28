@@ -1,0 +1,1 @@
+web:node -r ./prod-paths.js ./build/src/index.js
